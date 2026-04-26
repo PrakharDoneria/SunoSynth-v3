@@ -1,0 +1,77 @@
+<section class="fade-in" id="nowPlayingView">
+<div class="page-wrap">
+
+    <!-- Top bar -->
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;">
+        <button class="btn-icon" onclick="window.history.back()"><i data-lucide="arrow-left"></i></button>
+        <h1 style="font-family:var(--font-d);font-size:20px;font-weight:800;">Now Playing</h1>
+    </div>
+
+    <!-- Hero: Art + Info -->
+    <div id="npHeroWrap" style="display:flex;gap:32px;align-items:flex-start;flex-wrap:wrap;margin-bottom:32px;">
+
+        <!-- Album Art — static (no rotation on this page) -->
+        <div style="flex-shrink:0;">
+            <img id="npArtImg"
+                 src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Crect width='260' height='260' rx='20' fill='%23181818'/%3E%3C/svg%3E"
+                 alt="Album Art"
+                 style="width:260px;height:260px;border-radius:var(--r-xl);object-fit:cover;
+                        box-shadow:0 24px 56px rgba(0,0,0,0.65),0 0 40px var(--accent-glow);
+                        display:block;">
+        </div>
+
+        <!-- Track meta + desktop controls -->
+        <div style="flex:1;min-width:220px;display:flex;flex-direction:column;">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--accent);margin-bottom:8px;">Now Playing</div>
+            <h2 id="npTitle" style="font-family:var(--font-d);font-size:clamp(22px,3vw,38px);font-weight:900;line-height:1.1;margin-bottom:6px;">Select a track</h2>
+            <p id="npArtist" style="font-size:16px;color:var(--text-secondary);cursor:pointer;margin-bottom:4px;transition:color 0.2s;">Play a song to view details</p>
+            <p id="npAlbum"  style="font-size:13px;color:var(--text-muted);margin-bottom:20px;"></p>
+
+            <!-- Action buttons -->
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px;">
+                <button class="btn-icon" id="npBtnFav"         title="Favorite"        style="width:44px;height:44px;border-radius:50%;border:1px solid var(--border);"><i data-lucide="heart"></i></button>
+                <button class="btn-icon" id="npBtnAddPlaylist"  title="Add to Playlist" style="width:44px;height:44px;border-radius:50%;border:1px solid var(--border);"><i data-lucide="plus-circle"></i></button>
+                <button class="btn-icon" id="npBtnShare"        title="Share"           style="width:44px;height:44px;border-radius:50%;border:1px solid var(--border);"><i data-lucide="share-2"></i></button>
+            </div>
+
+            <!-- Desktop controls (hidden on mobile — overlay handles it) -->
+            <div class="np-desktop-controls">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+                    <span class="time-label" id="npDesktopCur">0:00</span>
+                    <div class="progress-track" id="npDesktopBar" style="flex:1;">
+                        <div class="progress-fill" id="npDesktopFill"></div>
+                    </div>
+                    <span class="time-label" id="npDesktopTot">0:00</span>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:center;gap:8px;">
+                    <button class="ctrl-btn" id="npDeskShuffle"><i data-lucide="shuffle"></i></button>
+                    <button class="ctrl-btn" id="npDeskPrev"><i data-lucide="skip-back"></i></button>
+                    <button class="play-btn-main" id="npDeskPlay"><i data-lucide="play"></i></button>
+                    <button class="ctrl-btn" id="npDeskNext"><i data-lucide="skip-forward"></i></button>
+                    <button class="ctrl-btn" id="npDeskRepeat"><i data-lucide="repeat"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Up Next Queue -->
+    <div>
+        <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:12px;">Up Next</div>
+        <div id="npQueue">
+            <p class="text-muted text-sm">No upcoming songs in queue.</p>
+        </div>
+    </div>
+
+</div>
+</section>
+
+<style>
+.np-desktop-controls { display:flex; flex-direction:column; }
+@media (max-width:899px) {
+    .np-desktop-controls { display:none; }
+    #npHeroWrap { justify-content:center; text-align:center; }
+    #npHeroWrap > div:first-child { margin:0 auto; }
+    #npHeroWrap > div:last-child  { align-items:center; width:100%; }
+    #npArtImg { width:220px !important; height:220px !important; }
+}
+</style>

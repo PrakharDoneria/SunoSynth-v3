@@ -1,0 +1,15 @@
+<section class="fade-in" id="favoritesView">
+<div class="page-wrap">
+    <div class="library-topbar">
+        <h1>❤️ Favorites</h1>
+    </div>
+    <div class="loading-spinner" id="favoritesSpinner"><i data-lucide="loader-2" class="spin"></i></div>
+    <div class="empty-state" id="favoritesEmpty" style="display:none">
+        <div class="empty-state-icon"><i data-lucide="heart"></i></div>
+        <h3>No favorites yet</h3>
+        <p>Tap the ❤️ on any song to save it here.</p>
+        <button class="btn-accent" onclick="navigateTo('search')" style="margin-top:14px">Discover Music</button>
+    </div>
+    <div class="songs-grid" id="favoritesGrid"></div>
+</div>
+</section>

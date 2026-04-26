@@ -1,0 +1,50 @@
+<section class="fade-in" id="libraryView">
+<div class="page-wrap">
+
+    <div class="library-topbar">
+        <h1>Your Library</h1>
+        <button class="btn-accent" id="btnCreatePlaylist" style="padding:10px 18px;font-size:14px;">
+            <i data-lucide="plus" style="width:16px;height:16px;"></i>
+            New Playlist
+        </button>
+    </div>
+
+    <!-- Stats row -->
+    <div class="stat-row">
+        <div class="stat-pill">
+            <div class="stat-pill-icon"><i data-lucide="layers"></i></div>
+            <div class="stat-value" id="statPlaylists">—</div>
+            <div class="stat-label">Playlists</div>
+        </div>
+        <div class="stat-pill">
+            <div class="stat-pill-icon"><i data-lucide="music"></i></div>
+            <div class="stat-value" id="statSongs">—</div>
+            <div class="stat-label">Songs</div>
+        </div>
+        <div class="stat-pill">
+            <div class="stat-pill-icon"><i data-lucide="heart"></i></div>
+            <div class="stat-value" id="statFavorites">—</div>
+            <div class="stat-label">Favorites</div>
+        </div>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading-spinner" id="librarySpinner">
+        <i data-lucide="loader-2" class="spin"></i>
+    </div>
+
+    <!-- Empty -->
+    <div class="empty-state" id="libraryEmpty" style="display:none">
+        <div class="empty-state-icon"><i data-lucide="library"></i></div>
+        <h3>No playlists yet</h3>
+        <p>Create your first playlist and start adding songs.</p>
+        <button class="btn-accent" id="btnCreatePlaylistEmpty" style="margin-top:14px">
+            <i data-lucide="plus" style="width:16px;height:16px;"></i> Create Playlist
+        </button>
+    </div>
+
+    <!-- Playlists list -->
+    <div class="playlists-grid" id="playlistsGrid"></div>
+
+</div>
+</section>

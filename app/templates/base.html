@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>SunoSynth — Dive Into Your Rhythm</title>
+    <meta name="description" content="SunoSynth — seamless music enjoyment, crafted for every moment. Search millions of JioSaavn tracks.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}?v=4.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}?v=4.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}?v=4.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/player.css') }}?v=4.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}?v=4.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}?v=4.0">
+</head>
+<body>
+
+<div class="dynamic-bg" id="dynamicBg"></div>
+<div class="liquid-transition" id="liquidTransition"></div>
+
+<div class="app-layout">
+
+    <!-- ══ DESKTOP LEFT SIDEBAR ══ -->
+    <nav class="sidebar" id="sidebarDesktop">
+        <div class="brand-logo-wrap">
+            <div class="brand-logo"><i data-lucide="music-2"></i></div>
+            <span class="brand-name">SunoSynth</span>
+        </div>
+        <ul class="nav-links">
+            <li class="nav-item active" id="dnav-home">
+                <a href="#" data-route="home"><i data-lucide="home"></i> Home</a>
+            </li>
+            <li class="nav-item" id="dnav-search">
+                <a href="#" data-route="search"><i data-lucide="search"></i> Search</a>
+            </li>
+            <li class="nav-item" id="dnav-library">
+                <a href="#" data-route="library"><i data-lucide="library"></i> Library</a>
+            </li>
+            <li class="nav-item" id="dnav-favorites">
+                <a href="#" data-route="favorites"><i data-lucide="heart"></i> Favorites</a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- ══ MAIN CONTENT ══ -->
+    <main class="main-content" id="app-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- ══ DESKTOP RIGHT PLAYER ══ -->
+    <aside class="player-sidebar" id="playerSidebar">
+        <div class="player-art-wrap">
+            <div class="player-art-ring"></div>
+            <div class="vinyl-disc" id="mainVinyl">
+                <img class="vinyl-art" id="playerImage"
+                     src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Crect width='220' height='220' rx='110' fill='%23181818'/%3E%3C/svg%3E"
+                     alt="Album Art">
+                <div class="vinyl-grooves"></div>
+                <div class="vinyl-hole"></div>
+                <div class="player-loader" id="playerLoader" style="display:none">
+                    <i data-lucide="loader-2" class="spin"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="wave-bars" id="waveBars">
+            <div class="wave-bar"></div><div class="wave-bar"></div>
+            <div class="wave-bar"></div><div class="wave-bar"></div>
+            <div class="wave-bar"></div><div class="wave-bar"></div>
+            <div class="wave-bar"></div><div class="wave-bar"></div>
+        </div>
+
+        <div class="player-track-info">
+            <h2 id="playerTitle">Select a track</h2>
+            <p id="playerArtist">Search to start listening</p>
+        </div>
+
+        <div class="player-controls-box">
+            <div class="progress-wrap">
+                <span class="time-label" id="timeCurrent">0:00</span>
+                <div class="progress-track" id="progressBarBg">
+                    <div class="progress-fill" id="progressBarFill"></div>
+                </div>
+                <span class="time-label" id="timeTotal">0:00</span>
+            </div>
+            <div class="ctrl-buttons">
+                <button class="ctrl-btn" id="btnShuffle" title="Shuffle"><i data-lucide="shuffle"></i></button>
+                <button class="ctrl-btn" id="btnPrev"   title="Previous"><i data-lucide="skip-back"></i></button>
+                <button class="play-btn-main" id="btnPlay" title="Play/Pause">
+                    <i data-lucide="play" id="playIcon"></i>
+                </button>
+                <button class="ctrl-btn" id="btnNext"   title="Next"><i data-lucide="skip-forward"></i></button>
+                <button class="ctrl-btn" id="btnRepeat" title="Repeat"><i data-lucide="repeat"></i></button>
+            </div>
+        </div>
+
+        <div class="volume-row">
+            <button class="ctrl-btn" id="btnMute" style="width:28px;height:28px;opacity:0.6"><i data-lucide="volume-2"></i></button>
+            <div class="volume-track" id="volumeTrack"><div class="volume-fill" id="volumeFill"></div></div>
+        </div>
+
+        <div class="player-quick-actions">
+            <button class="btn-icon" id="btnAddToPlaylist" title="Add to Playlist"><i data-lucide="plus-circle"></i></button>
+            <button class="btn-icon" id="btnFavoritePlayer" title="Favorite"><i data-lucide="heart"></i></button>
+            <button class="btn-icon" id="btnOpenNP" data-route="now-playing" title="Full View"><i data-lucide="maximize-2"></i></button>
+        </div>
+
+        <div id="playerQueueSection" style="display:none;width:100%">
+            <div class="player-queue-title">Up Next</div>
+            <div id="playerQueueList"></div>
+        </div>
+
+        <audio id="audioElement" preload="metadata"></audio>
+    </aside>
+
+</div><!-- /app-layout -->
+
+<!-- ══ MOBILE BOTTOM NAV ══ -->
+<nav class="bottom-nav" id="bottomNav">
+    <button class="bottom-nav-item active" id="mnav-home" data-route="home">
+        <i data-lucide="home"></i>
+        <span>Home</span>
+    </button>
+    <button class="bottom-nav-item" id="mnav-favorites" data-route="favorites">
+        <i data-lucide="heart"></i>
+        <span>Favorites</span>
+    </button>
+    <button class="bottom-nav-item" id="mnav-library" data-route="library">
+        <i data-lucide="list-music"></i>
+        <span>Library</span>
+    </button>
+    <button class="bottom-nav-item" id="mnav-search" data-route="search">
+        <i data-lucide="search"></i>
+        <span>Search</span>
+    </button>
+</nav>
+
+<!-- ══ MOBILE MINI PLAYER ══ -->
+<div class="mini-player" id="miniPlayer">
+    <div class="mini-progress-bar"><div class="mini-progress-fill" id="miniProgressFill"></div></div>
+    <img class="mini-art" id="miniArt"
+         src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='46' height='46'%3E%3Crect width='46' height='46' rx='6' fill='%23181818'/%3E%3C/svg%3E"
+         alt="">
+    <div class="mini-info">
+        <div class="mini-title"  id="miniTitle">No track playing</div>
+        <div class="mini-artist" id="miniArtist">Tap to explore</div>
+    </div>
+    <div class="mini-controls">
+        <button class="mini-ctrl-btn" id="miniBtnPrev"><i data-lucide="skip-back"></i></button>
+        <button class="mini-play-btn" id="miniBtnPlay"><i data-lucide="play" id="miniPlayIcon"></i></button>
+        <button class="mini-ctrl-btn" id="miniBtnNext"><i data-lucide="skip-forward"></i></button>
+    </div>
+</div>
+
+<!-- ══ FULL-SCREEN NOW PLAYING OVERLAY (Mobile) ══ -->
+<div class="nowplaying-overlay" id="npOverlay">
+    <div class="np-overlay-header">
+        <button class="btn-icon" id="closeNpOverlay"><i data-lucide="chevron-down"></i></button>
+        <div class="np-overlay-title-bar">Now Playing</div>
+        <button class="btn-icon" id="npOverlayMore"><i data-lucide="more-horizontal"></i></button>
+    </div>
+
+    <div class="np-art-section">
+        <img class="np-art-disc" id="npOverlayArt"
+             src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Crect width='300' height='300' rx='20' fill='%23181818'/%3E%3C/svg%3E"
+             alt="">
+    </div>
+
+    <div class="np-lyrics-section" id="npLyricsSection" style="display:none">
+        <div class="np-lyrics-text" id="npLyricsText"></div>
+    </div>
+
+    <div class="np-track-section">
+        <div class="np-song-title"  id="npOverlayTitle">Select a track</div>
+        <div class="np-song-artist" id="npOverlayArtist">Start exploring</div>
+    </div>
+
+    <div class="np-controls-section">
+        <div class="np-progress-wrap">
+            <span class="time-label" id="npTimeCurrent">0:00</span>
+            <div class="progress-track" id="npProgressBg" style="flex:1">
+                <div class="progress-fill" id="npProgressFill"></div>
+            </div>
+            <span class="time-label" id="npTimeTotal">0:00</span>
+        </div>
+        <div class="np-ctrl-row">
+            <button class="np-ctrl-btn" id="npBtnShuffle"><i data-lucide="shuffle"></i></button>
+            <button class="np-ctrl-btn" id="npBtnPrev"><i data-lucide="skip-back"></i></button>
+            <button class="np-play-btn" id="npBtnPlay"><i data-lucide="play" id="npPlayIcon"></i></button>
+            <button class="np-ctrl-btn" id="npBtnNext"><i data-lucide="skip-forward"></i></button>
+            <button class="np-ctrl-btn" id="npBtnRepeat"><i data-lucide="repeat"></i></button>
+        </div>
+        <div style="display:flex;justify-content:center;gap:16px;margin-top:16px;padding-bottom:24px;">
+            <button class="btn-icon" id="npBtnFav"><i data-lucide="heart"></i></button>
+            <button class="btn-icon" id="npBtnAdd"><i data-lucide="plus-circle"></i></button>
+        </div>
+    </div>
+</div>
+
+<!-- ══ MODALS ══ -->
+<div id="addToPlaylistModal" class="modal">
+    <div class="modal-content">
+        <h3>Add to Playlist</h3>
+        <div id="modalPlaylistsList" style="max-height:280px;overflow-y:auto;margin-bottom:16px;">
+            <div class="loading-spinner"><i data-lucide="loader-2" class="spin"></i></div>
+        </div>
+        <div class="modal-actions">
+            <button class="btn-secondary" id="btnCancelAdd">Close</button>
+        </div>
+    </div>
+</div>
+
+<div id="createPlaylistModal" class="modal">
+    <div class="modal-content">
+        <h3>New Playlist</h3>
+        <input type="text" id="newPlaylistName" placeholder="Playlist name…" maxlength="80">
+        <div class="modal-actions">
+            <button class="btn-secondary" id="btnCancelCreate">Cancel</button>
+            <button class="btn-accent" id="btnSavePlaylist">
+                <i data-lucide="check" style="width:16px;height:16px;"></i> Create
+            </button>
+        </div>
+    </div>
+</div>
+
+<div id="toast" class="toast"><span id="toastMsg">Message</span></div>
+
+<script src="{{ url_for('static', filename='js/utils.js') }}?v=4.0"></script>
+<script src="{{ url_for('static', filename='js/api.js') }}?v=4.0"></script>
+<script src="{{ url_for('static', filename='js/ui.js') }}?v=4.0"></script>
+<script src="{{ url_for('static', filename='js/player.js') }}?v=4.0"></script>
+<script src="{{ url_for('static', filename='js/views.js') }}?v=4.0"></script>
+<script src="{{ url_for('static', filename='js/router.js') }}?v=4.0"></script>
+<script src="{{ url_for('static', filename='js/core.js') }}?v=4.0"></script>
+<script>lucide.createIcons();</script>
+</body>
+</html>

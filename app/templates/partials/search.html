@@ -1,0 +1,50 @@
+<section class="search-page fade-in" id="searchView">
+<div class="page-wrap">
+
+    <!-- Sticky search bar -->
+    <div class="search-sticky">
+        <div class="search-bar" id="searchBarWrap">
+            <i data-lucide="search"></i>
+            <input type="text" id="searchInput" placeholder="Search for a song…" autocomplete="off" spellcheck="false">
+            <i data-lucide="x" class="search-clear" id="searchClear"></i>
+        </div>
+    </div>
+
+    <!-- Trending (shown before search) -->
+    <div id="trendingSection">
+        <div class="section-header">
+            <span class="section-title">🔥 Trending</span>
+        </div>
+        <div class="trending-grid" id="trendingGrid"></div>
+    </div>
+
+    <!-- Language filter chips -->
+    <div class="chip-row" id="langFilter" style="display:none;margin:0 0 16px">
+        <button class="chip active" data-lang="all">All</button>
+        <button class="chip" data-lang="hindi">Hindi</button>
+        <button class="chip" data-lang="punjabi">Punjabi</button>
+        <button class="chip" data-lang="english">English</button>
+        <button class="chip" data-lang="tamil">Tamil</button>
+        <button class="chip" data-lang="telugu">Telugu</button>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading-spinner" id="loadingSpinner" style="display:none">
+        <i data-lucide="loader-2" class="spin"></i>
+    </div>
+
+    <!-- Results -->
+    <div id="searchResultsSection" style="display:none">
+        <div class="search-results-count" id="resultsCountLabel"></div>
+        <div class="songs-grid" id="resultsGrid"></div>
+    </div>
+
+    <!-- Error / empty -->
+    <div class="empty-state" id="errorMessage" style="display:none">
+        <div class="empty-state-icon"><i data-lucide="search-x"></i></div>
+        <h3>No results found</h3>
+        <p id="errorText">Try a different search term.</p>
+    </div>
+
+</div>
+</section>

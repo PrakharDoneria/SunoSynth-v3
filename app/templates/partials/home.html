@@ -1,0 +1,122 @@
+<section class="fade-in" id="homeView">
+<div class="page-wrap">
+
+    <!-- Greeting row -->
+    <div class="home-greeting">
+        <div class="greeting-row">
+            <div>
+                <h1>Hello, Music Lover! 🎵</h1>
+                <p>What are you in the mood for?</p>
+            </div>
+            <div class="user-avatar">
+                <i data-lucide="user"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search shortcut -->
+    <div class="home-block" style="margin-bottom:20px">
+        <button class="search-bar" style="width:100%;text-align:left;cursor:pointer" onclick="navigateTo('search')">
+            <i data-lucide="search"></i>
+            <span style="color:var(--text-muted);font-size:15px;">Search for a song…</span>
+        </button>
+    </div>
+
+    <!-- Category Filter -->
+    <div class="home-block">
+        <div class="section-header">
+            <span class="section-title">Select Categories</span>
+            <span class="section-link">View all <i data-lucide="chevron-right"></i></span>
+        </div>
+        <div class="chip-row" id="categoryChipRow">
+            <button class="chip active" data-cat="all">All</button>
+            <button class="chip" data-cat="relax">Relax</button>
+            <button class="chip" data-cat="sad">Sad</button>
+            <button class="chip" data-cat="party">Party</button>
+            <button class="chip" data-cat="romance">Romance</button>
+            <button class="chip" data-cat="workout">Workout</button>
+            <button class="chip" data-cat="devotional">Devotional</button>
+        </div>
+    </div>
+
+    <!-- Popular Songs (big cards) -->
+    <div class="home-block" id="section-popular">
+        <div class="section-header">
+            <span class="section-title">Popular Songs</span>
+            <span class="section-link" onclick="navigateTo('search')">See all <i data-lucide="chevron-right"></i></span>
+        </div>
+        <div class="scroll-row" id="popularRow">
+            <!-- Skeleton cards while loading -->
+            <div class="big-card skeleton" style="width:160px;height:200px;flex-shrink:0;"></div>
+            <div class="big-card skeleton" style="width:160px;height:200px;flex-shrink:0;"></div>
+            <div class="big-card skeleton" style="width:160px;height:200px;flex-shrink:0;"></div>
+        </div>
+    </div>
+
+    <!-- Recently Listened -->
+    <div class="home-block" id="section-history" style="display:none">
+        <div class="section-header">
+            <span class="section-title">Recently Listened</span>
+            <span class="section-link">See all <i data-lucide="chevron-right"></i></span>
+        </div>
+        <div class="scroll-row" id="historyRow"></div>
+    </div>
+
+    <!-- Recent Artists -->
+    <div class="home-block" id="section-artists" style="display:none">
+        <div class="section-header">
+            <span class="section-title">Your Artists</span>
+        </div>
+        <div class="scroll-row" id="recentArtistsRow"></div>
+    </div>
+
+    <!-- Favorites strip -->
+    <div class="home-block" id="section-fav" style="display:none">
+        <div class="section-header">
+            <span class="section-title">❤️ Your Favorites</span>
+        </div>
+        <div class="scroll-row" id="favRow"></div>
+    </div>
+
+    <!-- Most Played -->
+    <div class="home-block" id="section-most-played" style="display:none">
+        <div class="section-header">
+            <span class="section-title">🔥 Most Played</span>
+        </div>
+        <div id="mostPlayedList"></div>
+    </div>
+
+    <!-- My Playlists strip -->
+    <div class="home-block" id="section-playlists" style="display:none">
+        <div class="section-header">
+            <span class="section-title">Playlists</span>
+            <span class="section-link" onclick="navigateTo('library')">View all <i data-lucide="chevron-right"></i></span>
+        </div>
+        <div id="homePlaylistStrip"></div>
+    </div>
+
+    <!-- More by Artist -->
+    <div class="home-block" id="section-more-by" style="display:none">
+        <div class="section-header">
+            <span class="section-title" id="moreByTitle">More by Artist</span>
+        </div>
+        <div class="scroll-row" id="moreByArtistRow"></div>
+    </div>
+
+    <!-- Recommended Feed -->
+    <div class="home-block" id="section-feed">
+        <div class="section-header">
+            <span class="section-title">✨ Recommended</span>
+            <span class="section-link" onclick="navigateTo('search')">Explore <i data-lucide="chevron-right"></i></span>
+        </div>
+        <div class="songs-grid" id="homeFeedGrid"></div>
+        <div class="empty-state" id="homeFeedEmpty" style="display:none">
+            <div class="empty-state-icon"><i data-lucide="sparkles"></i></div>
+            <h3>Nothing here yet</h3>
+            <p>Play some tracks to unlock personalized recommendations.</p>
+            <button class="btn-accent mt-3" onclick="navigateTo('search')" style="margin-top:14px">Explore Music</button>
+        </div>
+    </div>
+
+</div>
+</section>

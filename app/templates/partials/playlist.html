@@ -1,0 +1,66 @@
+<section class="playlist-detail-page fade-in" id="playlistView">
+
+    <!-- Playlist Hero (same style as album hero) -->
+    <div class="album-hero" id="playlistHero">
+        <div class="playlist-cover-art">
+            <i data-lucide="music-4"></i>
+        </div>
+        <div class="playlist-hero-info">
+            <div class="playlist-type">Playlist</div>
+            <h1 class="playlist-hero-title" id="detailPlaylistName">Playlist</h1>
+            <p class="text-secondary" id="detailPlaylistMeta"></p>
+            <div class="album-actions mt-3" id="playlistActions">
+                <button class="btn-primary" id="btnPlayPlaylist">
+                    <i data-lucide="play" style="width:16px;height:16px;fill:white"></i>
+                    Play All
+                </button>
+                <button class="btn-secondary btn-danger" id="btnDeletePlaylist">
+                    <i data-lucide="trash-2" style="width:16px;height:16px;"></i>
+                    Delete
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Song Table -->
+    <div style="padding: 0 40px">
+        <div class="playlist-song-table">
+            <div class="table-header">
+                <span>#</span>
+                <span>Title</span>
+                <span>Album</span>
+                <span></span>
+            </div>
+            <div id="playlistSongsList"></div>
+        </div>
+
+        <!-- Empty state -->
+        <div class="empty-state" id="playlistEmpty" style="display:none">
+            <div class="empty-state-icon"><i data-lucide="music"></i></div>
+            <h3>No songs yet</h3>
+            <p>Search for songs and add them to this playlist.</p>
+            <button class="btn-primary mt-2" onclick="navigateTo('search')">Find Songs</button>
+        </div>
+    </div>
+
+    <!-- Template for song rows -->
+    <template id="playlistSongTemplate">
+        <div class="song-table-row">
+            <span class="tr-index"></span>
+            <div class="tr-song">
+                <img class="item-img" src="" alt="">
+                <div>
+                    <div class="tr-song-title item-title"></div>
+                    <div class="tr-song-artist item-artist"></div>
+                </div>
+            </div>
+            <div class="tr-album"></div>
+            <div class="tr-actions">
+                <button class="btn-icon remove-song-btn" title="Remove">
+                    <i data-lucide="trash-2"></i>
+                </button>
+            </div>
+        </div>
+    </template>
+
+</section>

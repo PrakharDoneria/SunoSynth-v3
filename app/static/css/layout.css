@@ -1,0 +1,190 @@
+/* ═══════════════════════════════════════════════════════════
+   SunoSynth — Layout (Mobile-first with Desktop sidebar)
+═══════════════════════════════════════════════════════════ */
+
+/* ─── MOBILE (default) ─── */
+body { overflow:hidden; }
+
+.app-layout {
+    display:flex; flex-direction:column;
+    height:100dvh; width:100%; overflow:hidden;
+}
+
+/* Sidebar hidden by default (mobile) */
+.sidebar { display:none; }
+
+/* Main scrollable area */
+.main-content {
+    flex:1; overflow-y:auto; overflow-x:hidden;
+    /* leave room for mini-player + bottom nav */
+    padding-bottom:calc(var(--mini-player-h) + var(--bottom-nav-h) + 8px);
+    position:relative; z-index:1;
+}
+
+/* Player sidebar hidden on mobile */
+.player-sidebar { display:none; }
+
+/* View transitions */
+.main-content.view-exit { opacity:0; transform:translateY(10px); transition:all 0.18s ease; }
+.main-content.view-enter { animation:contentIn 0.32s ease both; }
+@keyframes contentIn { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+
+/* ─── Section headers ─── */
+.section-header {
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:14px;
+}
+.section-title {
+    font-family:var(--font-d); font-size:17px; font-weight:700;
+}
+.section-link {
+    display:flex; align-items:center; gap:4px;
+    font-size:12px; color:var(--text-muted); font-weight:500;
+    transition:color var(--t-fast);
+}
+.section-link:hover { color:var(--accent); }
+.section-link i { width:14px; height:14px; }
+
+/* ─── Scroll rows ─── */
+.scroll-row {
+    display:flex; gap:14px; overflow-x:auto;
+    padding-bottom:6px; scrollbar-width:none;
+}
+.scroll-row::-webkit-scrollbar { display:none; }
+
+/* ─── Home blocks ─── */
+.home-block { margin-bottom:28px; }
+
+/* ════════════════════════════════════
+   BOTTOM NAVIGATION BAR
+════════════════════════════════════ */
+.bottom-nav {
+    position:fixed; bottom:0; left:0; right:0; z-index:500;
+    height:var(--bottom-nav-h);
+    background:var(--bg-card);
+    border-top:1px solid var(--border);
+    display:flex; align-items:center; justify-content:space-around;
+    padding:0 8px;
+}
+.bottom-nav-item {
+    display:flex; flex-direction:column; align-items:center; gap:4px;
+    flex:1; height:100%; justify-content:center;
+    color:var(--text-muted); cursor:pointer;
+    transition:color var(--t-fast);
+    background:none; border:none;
+}
+.bottom-nav-item i { width:22px; height:22px; }
+.bottom-nav-item span { font-size:10px; font-weight:600; letter-spacing:0.02em; }
+.bottom-nav-item.active { color:var(--accent); }
+.bottom-nav-item.active i { filter:drop-shadow(0 0 6px rgba(245,158,11,0.6)); }
+
+/* ════════════════════════════════════
+   MINI PLAYER (above bottom nav)
+════════════════════════════════════ */
+.mini-player {
+    position:fixed;
+    bottom:var(--bottom-nav-h); left:8px; right:8px; z-index:499;
+    height:var(--mini-player-h);
+    background:var(--bg-card);
+    border:1px solid var(--border);
+    border-radius:var(--r-lg);
+    display:none; align-items:center; gap:12px;
+    padding:0 16px;
+    cursor:pointer;
+    box-shadow:0 -4px 24px rgba(0,0,0,0.4);
+}
+.mini-player.visible { display:flex; }
+
+/* mini progress bar on top edge */
+.mini-progress-bar {
+    position:absolute; top:0; left:0; right:0; height:2px;
+    background:rgba(255,255,255,0.06); border-radius:var(--r-lg) var(--r-lg) 0 0; overflow:hidden;
+}
+.mini-progress-fill {
+    height:100%; background:var(--gradient-accent); width:0%; transition:width 0.1s linear;
+}
+
+.mini-art {
+    width:46px; height:46px; border-radius:50%;
+    object-fit:cover; flex-shrink:0;
+    animation:spin 14s linear infinite; animation-play-state:paused;
+    box-shadow:0 2px 10px rgba(0,0,0,0.4);
+}
+.mini-art.playing { animation-play-state:running; }
+.mini-info { flex:1; min-width:0; }
+.mini-title  { font-size:14px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.mini-artist { font-size:12px; color:var(--text-muted); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.mini-controls { display:flex; align-items:center; gap:4px; flex-shrink:0; }
+.mini-ctrl-btn {
+    width:36px; height:36px; border-radius:50%; display:flex;
+    align-items:center; justify-content:center; color:var(--text-secondary);
+    transition:color var(--t-fast);
+}
+.mini-ctrl-btn:hover { color:var(--text-primary); }
+.mini-play-btn {
+    width:42px; height:42px; border-radius:50%;
+    background:var(--gradient-accent); color:var(--text-on-accent);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 4px 14px var(--accent-glow);
+    transition:transform var(--t-fast);
+}
+.mini-play-btn:hover { transform:scale(1.06); }
+.mini-play-btn i { width:18px; height:18px; fill:var(--text-on-accent); }
+.mini-ctrl-btn i { width:18px; height:18px; }
+
+/* ════════════════════════════════════
+   FULL-SCREEN NOW PLAYING OVERLAY
+════════════════════════════════════ */
+.nowplaying-overlay {
+    position:fixed; inset:0; z-index:600;
+    background:var(--bg-base);
+    display:flex; flex-direction:column;
+    transform:translateY(100%);
+    transition:transform 0.45s cubic-bezier(0.4,0,0.2,1);
+    overflow-y:auto;
+}
+.nowplaying-overlay.open { transform:translateY(0); }
+
+/* ════════════════════════════════════
+   DESKTOP LAYOUT (≥ 900px)
+════════════════════════════════════ */
+@media (min-width:900px) {
+    body { overflow:hidden; }
+
+    .app-layout {
+        display:grid;
+        grid-template-columns:var(--sidebar-w) 1fr var(--player-w);
+        grid-template-rows:100vh;
+        height:100vh; width:100%;
+        flex-direction:unset;
+    }
+
+    /* Show desktop sidebar */
+    .sidebar {
+        display:flex; flex-direction:column;
+        background:var(--bg-surface);
+        border-right:1px solid var(--border);
+        padding:28px 20px; z-index:20;
+    }
+
+    .main-content {
+        overflow-y:auto; padding-bottom:0;
+        background:var(--bg-base);
+    }
+
+    /* Show right player */
+    .player-sidebar {
+        display:flex; flex-direction:column; align-items:center;
+        overflow-y:auto; padding:28px 22px;
+        background:var(--bg-surface);
+        border-left:1px solid var(--border);
+    }
+
+    /* Hide mobile nav + mini player on desktop */
+    .bottom-nav { display:none !important; }
+    .mini-player { display:none !important; }
+    .nowplaying-overlay { display:none; }
+
+    /* Toast adjusts */
+    .toast { bottom:24px; }
+}

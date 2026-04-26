@@ -1,0 +1,20 @@
+/* responsive.css — additional breakpoints only (main layout in layout.css) */
+
+@media (max-width: 400px) {
+    .big-card   { width:140px; height:176px; }
+    .recent-card { width:120px; height:120px; }
+    .songs-grid  { grid-template-columns:repeat(2,1fr); gap:10px; }
+    .trending-grid { grid-template-columns:1fr; }
+}
+
+@media (min-width:640px) and (max-width:899px) {
+    .songs-grid { grid-template-columns:repeat(3,1fr); }
+    .trending-grid { grid-template-columns:repeat(3,1fr); }
+    .big-card { width:180px; height:220px; }
+    .page-wrap { padding:20px 24px 12px; }
+}
+
+@media (min-width:900px) {
+    .table-header    { grid-template-columns:36px 3fr 1fr 80px; }
+    .song-table-row  { grid-template-columns:36px 3fr 1fr 80px; }
+}

@@ -1,0 +1,40 @@
+<section class="artist-detail-page fade-in" id="artistView">
+
+    <!-- Artist hero banner -->
+    <div class="artist-hero" id="artistHero">
+        <img class="artist-hero-bg" id="artistBg" src="" alt="">
+        <div class="artist-hero-overlay"></div>
+        <div class="artist-hero-content">
+            <div class="artist-hero-name" id="artistName">Loading...</div>
+            <p class="artist-hero-meta text-secondary" id="artistMeta"></p>
+            <div class="hero-actions mt-2">
+                <button class="btn-primary" id="btnPlayArtist">
+                    <i data-lucide="play" style="width:16px;height:16px;fill:white"></i>
+                    Play Top Songs
+                </button>
+                <button class="btn-secondary" id="btnSearchArtist">
+                    <i data-lucide="search" style="width:16px;height:16px;"></i>
+                    Search Songs
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content -->
+    <div class="artist-content">
+        <div class="loading-spinner" id="artistSpinner">
+            <i data-lucide="loader-2" class="spin"></i>
+        </div>
+
+        <div id="artistContent" style="display:none">
+            <!-- Top tracks -->
+            <div class="artist-top-tracks-section">
+                <div class="section-header">
+                    <span class="section-title"><i data-lucide="trending-up"></i> Top Songs</span>
+                </div>
+                <div id="artistTopTracks"></div>
+            </div>
+        </div>
+    </div>
+
+</section>

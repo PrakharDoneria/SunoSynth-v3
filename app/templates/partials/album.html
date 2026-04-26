@@ -1,0 +1,39 @@
+<section class="album-detail-page fade-in" id="albumView">
+
+    <!-- Album hero -->
+    <div class="album-hero" id="albumHero">
+        <img class="album-cover" id="albumCover" src="" alt="Album Cover">
+        <div class="album-info">
+            <div class="album-type">Album</div>
+            <h1 class="album-title" id="albumTitle">Loading...</h1>
+            <p class="album-meta text-secondary" id="albumMeta"></p>
+            <div class="album-actions">
+                <button class="btn-primary" id="btnPlayAlbum">
+                    <i data-lucide="play" style="width:16px;height:16px;fill:white"></i>
+                    Play All
+                </button>
+                <button class="btn-secondary" id="btnShuffleAlbum">
+                    <i data-lucide="shuffle" style="width:16px;height:16px;"></i>
+                    Shuffle
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Songs -->
+    <div class="album-songs-section">
+        <div class="loading-spinner" id="albumSpinner">
+            <i data-lucide="loader-2" class="spin"></i>
+        </div>
+        <div class="playlist-song-table" id="albumSongTable" style="display:none">
+            <div class="table-header">
+                <span>#</span>
+                <span>Title</span>
+                <span>Duration</span>
+                <span></span>
+            </div>
+            <div id="albumSongsList"></div>
+        </div>
+    </div>
+
+</section>
