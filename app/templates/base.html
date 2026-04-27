@@ -3,8 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#f59e0b">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>SunoSynth — Dive Into Your Rhythm</title>
     <meta name="description" content="SunoSynth — seamless music enjoyment, crafted for every moment. Search millions of JioSaavn tracks.">
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.webmanifest') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/icon-192.svg') }}">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -41,10 +46,26 @@
             <li class="nav-item" id="dnav-library">
                 <a href="#" data-route="library"><i data-lucide="library"></i> Library</a>
             </li>
+            <li class="nav-item" id="dnav-history">
+                <a href="#" data-route="history"><i data-lucide="history"></i> History</a>
+            </li>
             <li class="nav-item" id="dnav-favorites">
                 <a href="#" data-route="favorites"><i data-lucide="heart"></i> Favorites</a>
             </li>
+            <li class="nav-item" id="dnav-about">
+                <a href="#" data-route="about"><i data-lucide="sparkles"></i> About</a>
+            </li>
         </ul>
+        <div class="sidebar-footer">
+            <div class="server-status-wrap" id="serverStatus" title="Server Status">
+                <div class="status-dot" id="serverStatusDot"></div>
+                <span id="serverStatusText">Connecting...</span>
+            </div>
+            <button class="btn-secondary install-app-btn" id="btnInstallApp" style="display:none">
+                <i data-lucide="download"></i>
+                Install App
+            </button>
+        </div>
     </nav>
 
     <!-- ══ MAIN CONTENT ══ -->
@@ -69,10 +90,8 @@
         </div>
 
         <div class="wave-bars" id="waveBars">
-            <div class="wave-bar"></div><div class="wave-bar"></div>
-            <div class="wave-bar"></div><div class="wave-bar"></div>
-            <div class="wave-bar"></div><div class="wave-bar"></div>
-            <div class="wave-bar"></div><div class="wave-bar"></div>
+            <span class="bar-1"></span><span class="bar-2"></span><span class="bar-3"></span><span class="bar-4"></span>
+            <span class="bar-5"></span><span class="bar-6"></span><span class="bar-7"></span><span class="bar-8"></span>
         </div>
 
         <div class="player-track-info">
@@ -120,6 +139,11 @@
 
 </div><!-- /app-layout -->
 
+<button class="btn-accent install-app-mobile" id="btnInstallAppMobile" style="display:none">
+    <i data-lucide="download"></i>
+    Install App
+</button>
+
 <!-- ══ MOBILE BOTTOM NAV ══ -->
 <nav class="bottom-nav" id="bottomNav">
     <button class="bottom-nav-item active" id="mnav-home" data-route="home">
@@ -129,6 +153,10 @@
     <button class="bottom-nav-item" id="mnav-favorites" data-route="favorites">
         <i data-lucide="heart"></i>
         <span>Favorites</span>
+    </button>
+    <button class="bottom-nav-item" id="mnav-history" data-route="history">
+        <i data-lucide="history"></i>
+        <span>History</span>
     </button>
     <button class="bottom-nav-item" id="mnav-library" data-route="library">
         <i data-lucide="list-music"></i>
@@ -166,9 +194,15 @@
     </div>
 
     <div class="np-art-section">
-        <img class="np-art-disc" id="npOverlayArt"
-             src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Crect width='300' height='300' rx='20' fill='%23181818'/%3E%3C/svg%3E"
-             alt="">
+        <div class="np-art-wrap" id="npArtWrap">
+            <div class="vinyl-disc" id="npVinylDisc">
+                <img class="vinyl-art" id="npOverlayArt"
+                     src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Crect width='300' height='300' rx='20' fill='%23181818'/%3E%3C/svg%3E"
+                     alt="">
+                <div class="vinyl-grooves"></div>
+                <div class="vinyl-hole"></div>
+            </div>
+        </div>
     </div>
 
     <div class="np-lyrics-section" id="npLyricsSection" style="display:none">
@@ -195,9 +229,20 @@
             <button class="np-ctrl-btn" id="npBtnNext"><i data-lucide="skip-forward"></i></button>
             <button class="np-ctrl-btn" id="npBtnRepeat"><i data-lucide="repeat"></i></button>
         </div>
-        <div style="display:flex;justify-content:center;gap:16px;margin-top:16px;padding-bottom:24px;">
+        <div style="display:flex;justify-content:center;gap:16px;margin-top:16px;padding-bottom:16px;">
             <button class="btn-icon" id="npBtnFav"><i data-lucide="heart"></i></button>
             <button class="btn-icon" id="npBtnAdd"><i data-lucide="plus-circle"></i></button>
+        </div>
+    </div>
+
+    <!-- Mobile Queue Section -->
+    <div class="np-queue-section" id="npQueueSection">
+        <div class="np-queue-header">
+            <span class="np-queue-title">Up Next</span>
+            <button class="btn-text-sm" id="npBtnClearQueue">Clear</button>
+        </div>
+        <div class="np-queue-list" id="npQueueList">
+            <!-- Items injected by JS -->
         </div>
     </div>
 </div>
@@ -228,10 +273,24 @@
     </div>
 </div>
 
+<div id="confirmModal" class="modal">
+    <div class="modal-content confirm-modal">
+        <div class="confirm-icon"><i data-lucide="help-circle"></i></div>
+        <h3 id="confirmTitle">Are you sure?</h3>
+        <p id="confirmMessage" class="text-muted">This action cannot be undone.</p>
+        <div class="modal-actions">
+            <button class="btn-secondary" id="btnConfirmCancel">Cancel</button>
+            <button class="btn-accent" id="btnConfirmAction">Proceed</button>
+        </div>
+    </div>
+</div>
+
 <div id="toast" class="toast"><span id="toastMsg">Message</span></div>
 
 <script src="{{ url_for('static', filename='js/utils.js') }}?v=4.0"></script>
+<script src="{{ url_for('static', filename='js/storage.js') }}?v=4.0"></script>
 <script src="{{ url_for('static', filename='js/api.js') }}?v=4.0"></script>
+<script src="{{ url_for('static', filename='js/recommender.js') }}?v=4.0"></script>
 <script src="{{ url_for('static', filename='js/ui.js') }}?v=4.0"></script>
 <script src="{{ url_for('static', filename='js/player.js') }}?v=4.0"></script>
 <script src="{{ url_for('static', filename='js/views.js') }}?v=4.0"></script>

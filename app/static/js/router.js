@@ -6,7 +6,9 @@ const Router = {
         if (route === 'home')           return '/';
         if (route === 'search')         return '/search';
         if (route === 'library')        return '/library';
+        if (route === 'history')        return '/history';
         if (route === 'favorites')      return '/favorites';
+        if (route === 'about')          return '/about';
         if (route === 'now-playing')    return '/now-playing';
         if (route.startsWith('playlist-')) return `/playlist/${route.split('-')[1]}`;
         if (route.startsWith('album-'))    return `/album/${route.split('-').slice(1).join('-')}`;
@@ -14,8 +16,8 @@ const Router = {
         return '/';
     },
 
-    async navigateTo(route, { replace = false } = {}) {
-        if (this.currentRoute === route) return;
+    async navigateTo(route, { replace = false, force = false } = {}) {
+        if (this.currentRoute === route && !force) return;
 
         // On mobile, now-playing opens the overlay instead of navigating
         const isMobile = window.innerWidth < 900;
@@ -49,7 +51,9 @@ const Router = {
         let partial = 'home', extraId = null;
         if (route === 'search')             partial = 'search';
         else if (route === 'library')       partial = 'library';
+        else if (route === 'history')       partial = 'history';
         else if (route === 'favorites')     partial = 'favorites';
+        else if (route === 'about')         partial = 'about';
         else if (route === 'now-playing')   partial = 'now_playing';
         else if (route.startsWith('playlist-')) { partial = 'playlist'; extraId = route.split('-')[1]; }
         else if (route.startsWith('album-'))    { partial = 'album';    extraId = route.split('-').slice(1).join('-'); }
@@ -70,7 +74,9 @@ const Router = {
         if (partial === 'home')             Views.initHome();
         else if (partial === 'search')      Views.initSearch();
         else if (partial === 'library')     Views.initLibrary();
+        else if (partial === 'history')     Views.initHistory();
         else if (partial === 'favorites')   Views.initFavorites();
+        else if (partial === 'about')       Views.initAbout();
         else if (partial === 'now_playing') Views.initNowPlaying();
         else if (partial === 'playlist')    Views.initPlaylistDetail(extraId);
         else if (partial === 'album')       Views.initAlbum(extraId);
@@ -101,9 +107,20 @@ const _NP = {
         if (Player.currentIndex < 0 || !Player.queue[Player.currentIndex]) return;
         const song = Player.queue[Player.currentIndex];
         const art = el('npOverlayArt');
-        if (art) { art.src = song.image_url || ''; art.classList.toggle('playing', !Player.audio.paused); }
-        if (el('npOverlayTitle'))  el('npOverlayTitle').textContent  = song.title;
-        if (el('npOverlayArtist')) el('npOverlayArtist').textContent = song.artist || '';
+        const isPlaying = !Player.audio.paused;
+        if (art) { 
+            art.src = song.image_url || ''; 
+            art.classList.toggle('playing', isPlaying); 
+        }
+        const safeTitle = decodeHTMLEntities(song.title || '');
+        const safeArtist = decodeHTMLEntities(song.artist || '');
+        if (el('npOverlayTitle'))  el('npOverlayTitle').textContent  = safeTitle;
+        if (el('npOverlayArtist')) el('npOverlayArtist').textContent = safeArtist;
+        
+        // Sync play icons in overlay
+        const playIcon = el('npPlayIcon');
+        if (playIcon) playIcon.setAttribute('data-lucide', isPlaying ? 'pause' : 'play');
+        lucide.createIcons();
     }
 };
 window._NP = _NP;

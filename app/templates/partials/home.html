@@ -1,6 +1,52 @@
 <section class="fade-in" id="homeView">
 <div class="page-wrap">
 
+    <div class="onboarding-shell" id="onboardingShell" style="display:none">
+        <div class="onboarding-card">
+            <div class="onboarding-top">
+                <span class="onboarding-kicker">New Here</span>
+                <h2 id="onboardingTitle">Pick at least 5 favorite artists</h2>
+                <p id="onboardingSubtitle">We will build your first Home feed around these artists.</p>
+            </div>
+
+            <div class="onboarding-progress">
+                <span class="onboarding-dot active"></span>
+                <span class="onboarding-dot"></span>
+                <span class="onboarding-dot"></span>
+            </div>
+
+            <div class="onboarding-step active" data-step="1">
+                <div class="onboarding-counter" id="artistPickCounter">0 selected</div>
+                <div class="onboarding-chip-grid" id="onboardingArtistGrid"></div>
+            </div>
+
+            <div class="onboarding-step" data-step="2">
+                <label class="onboarding-label" for="onboardingQueryInput">Search and add favorite music vibes</label>
+                <div class="search-bar" style="margin-bottom:12px">
+                    <i data-lucide="search"></i>
+                    <input type="text" id="onboardingQueryInput" placeholder="e.g. romantic hindi, lo-fi bollywood, punjabi party">
+                    <button id="onboardingAddQuery" class="chip" style="padding:6px 12px">Add</button>
+                </div>
+                <div class="onboarding-helper">Add at least 2 searches you usually play.</div>
+                <div class="chip-row" id="onboardingQuickQueries" style="margin-top:10px"></div>
+                <div class="chip-row" id="onboardingQueryRow" style="margin-top:12px"></div>
+            </div>
+
+            <div class="onboarding-step" data-step="3">
+                <div class="onboarding-finish">
+                    <div class="onboarding-finish-icon"><i data-lucide="sparkles"></i></div>
+                    <h3>Your feed is ready</h3>
+                    <p>We will show songs based on your artists and your favorite search style.</p>
+                </div>
+            </div>
+
+            <div class="onboarding-actions">
+                <button class="btn-secondary" id="onboardingBackBtn">Back</button>
+                <button class="btn-accent" id="onboardingNextBtn">Continue</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Greeting row -->
     <div class="home-greeting">
         <div class="greeting-row">
@@ -22,20 +68,20 @@
         </button>
     </div>
 
-    <!-- Category Filter -->
     <div class="home-block">
-        <div class="section-header">
-            <span class="section-title">Select Categories</span>
-            <span class="section-link">View all <i data-lucide="chevron-right"></i></span>
-        </div>
-        <div class="chip-row" id="categoryChipRow">
-            <button class="chip active" data-cat="all">All</button>
-            <button class="chip" data-cat="relax">Relax</button>
-            <button class="chip" data-cat="sad">Sad</button>
-            <button class="chip" data-cat="party">Party</button>
-            <button class="chip" data-cat="romance">Romance</button>
-            <button class="chip" data-cat="workout">Workout</button>
-            <button class="chip" data-cat="devotional">Devotional</button>
+        <div class="home-quick-options">
+            <button class="quick-option-btn" onclick="navigateTo('history')">
+                <i data-lucide="history"></i>
+                History
+            </button>
+            <button class="quick-option-btn" onclick="navigateTo('about')">
+                <i data-lucide="sparkles"></i>
+                About
+            </button>
+            <a class="quick-option-btn" href="https://github.com/PrakharDoneria/SunoSynth-v3" target="_blank" rel="noreferrer noopener">
+                <i data-lucide="github"></i>
+                Open Source
+            </a>
         </div>
     </div>
 
@@ -57,7 +103,7 @@
     <div class="home-block" id="section-history" style="display:none">
         <div class="section-header">
             <span class="section-title">Recently Listened</span>
-            <span class="section-link">See all <i data-lucide="chevron-right"></i></span>
+            <span class="section-link" onclick="navigateTo('history')">See all <i data-lucide="chevron-right"></i></span>
         </div>
         <div class="scroll-row" id="historyRow"></div>
     </div>
@@ -106,7 +152,7 @@
     <!-- Recommended Feed -->
     <div class="home-block" id="section-feed">
         <div class="section-header">
-            <span class="section-title">✨ Recommended</span>
+            <span class="section-title" id="homeFeedTitle">✨ Recommended</span>
             <span class="section-link" onclick="navigateTo('search')">Explore <i data-lucide="chevron-right"></i></span>
         </div>
         <div class="songs-grid" id="homeFeedGrid"></div>

@@ -51,6 +51,31 @@
 .btn-icon i { width:18px; height:18px; }
 .btn-icon:hover { color:var(--text-primary); background:rgba(255,255,255,0.06); }
 .btn-icon.active { color:var(--accent); }
+.btn-icon.favorite-active { color:#ef4444; }
+.btn-icon.favorite-active i { fill:#ef4444; }
+
+.install-app-btn {
+    width: 100%;
+    margin-top: 12px;
+    justify-content: center;
+    border-color: rgba(245, 158, 11, 0.35);
+}
+
+.install-app-mobile {
+    position: fixed;
+    right: 14px;
+    bottom: 86px;
+    z-index: 90;
+    padding: 11px 16px;
+    border-radius: var(--r-full);
+    font-size: 13px;
+    font-weight: 700;
+    box-shadow: 0 10px 22px rgba(245, 158, 11, 0.25);
+}
+
+@media (min-width: 900px) {
+    .install-app-mobile { display: none !important; }
+}
 
 /* ════════════════════════════════════
    SEARCH BAR
@@ -185,6 +210,8 @@
 .song-card:hover .card-fav-btn { opacity:1; }
 .card-fav-btn.active { opacity:1; color:var(--accent); }
 .card-fav-btn i { width:13px; height:13px; }
+.card-fav-btn.active { color:#ef4444; }
+.card-fav-btn.active i { fill:#ef4444; }
 
 .card-title { font-size:14px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .card-subtitle { font-size:12px; color:var(--text-muted); margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
@@ -214,6 +241,35 @@
 .row-duration { font-size:12px; color:var(--text-muted); flex-shrink:0; }
 .row-actions { display:flex; gap:2px; opacity:0; transition:opacity var(--t-fast); }
 .song-row:hover .row-actions { opacity:1; }
+
+.queue-item-actions {
+    margin-left:auto;
+    display:flex;
+    align-items:center;
+    gap:4px;
+    opacity:0;
+    transition:opacity var(--t-fast);
+}
+
+.queue-item:hover .queue-item-actions { opacity:1; }
+
+.queue-action-btn {
+    width:26px;
+    height:26px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:var(--text-muted);
+    transition:all var(--t-fast);
+}
+
+.queue-action-btn i { width:14px; height:14px; }
+
+.queue-action-btn:hover {
+    color:var(--text-primary);
+    background:rgba(255,255,255,0.08);
+}
 
 /* Playing wave indicator */
 .playing-wave { display:flex; align-items:flex-end; gap:2px; height:18px; }

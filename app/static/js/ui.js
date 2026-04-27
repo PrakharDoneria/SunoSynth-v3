@@ -144,7 +144,7 @@ function renderRankedList(songs, container) {
 /* ── Nav highlight ── */
 function setActiveNav(route) {
     const base = route.split('-')[0];
-    const map = { home:'home', search:'search', library:'library', favorites:'favorites', now:'home', playlist:'library', album:'search', artist:'search' };
+    const map = { home:'home', search:'search', library:'library', history:'history', favorites:'favorites', about:'about', now:'home', playlist:'library', album:'search', artist:'search' };
     const key = map[base] || 'home';
 
     // Desktop
@@ -189,4 +189,32 @@ async function UI_openAddToPlaylist(song) {
     }
     lucide.createIcons();
     document.getElementById('btnCancelAdd').onclick = () => modal.classList.remove('show');
+}
+async function UI_confirm(title, message) {
+    return new Promise(resolve => {
+        const modal = document.getElementById('confirmModal');
+        const t = document.getElementById('confirmTitle');
+        const m = document.getElementById('confirmMessage');
+        const btnOk = document.getElementById('btnConfirmAction');
+        const btnNo = document.getElementById('btnConfirmCancel');
+        
+        if (!modal || !btnOk || !btnNo) return resolve(confirm(message));
+
+        t.textContent = title;
+        m.textContent = message;
+        modal.classList.add('show');
+
+        const cleanup = (val) => {
+            modal.classList.remove('show');
+            btnOk.removeEventListener('click', ok);
+            btnNo.removeEventListener('click', no);
+            resolve(val);
+        };
+        const ok = () => cleanup(true);
+        const no = () => cleanup(false);
+
+        btnOk.addEventListener('click', ok);
+        btnNo.addEventListener('click', no);
+        modal.addEventListener('click', e => { if (e.target === modal) no(); }, {once: true});
+    });
 }

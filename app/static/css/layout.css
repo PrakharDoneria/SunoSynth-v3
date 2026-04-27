@@ -83,7 +83,7 @@ body { overflow:hidden; }
 ════════════════════════════════════ */
 .mini-player {
     position:fixed;
-    bottom:var(--bottom-nav-h); left:8px; right:8px; z-index:499;
+    bottom:calc(var(--bottom-nav-h) + 10px); left:8px; right:8px; z-index:499;
     height:var(--mini-player-h);
     background:var(--bg-card);
     border:1px solid var(--border);
@@ -135,6 +135,54 @@ body { overflow:hidden; }
 /* ════════════════════════════════════
    FULL-SCREEN NOW PLAYING OVERLAY
 ════════════════════════════════════ */
+/* SIDEBAR FOOTER & STATUS */
+.sidebar-footer {
+    margin-top: auto;
+    padding: 20px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.server-status-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    padding: 8px 12px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #555;
+    box-shadow: 0 0 5px rgba(0,0,0,0.5);
+}
+
+.status-dot.online {
+    background: #00ff88;
+    box-shadow: 0 0 10px rgba(0,255,136,0.4);
+}
+
+.status-dot.offline {
+    background: #ff4d4d;
+    box-shadow: 0 0 10px rgba(255,77,77,0.4);
+}
+
+.status-dot.checking {
+    background: #ffcc00;
+    animation: status-pulse 1.5s infinite;
+}
+
+@keyframes status-pulse {
+    0% { opacity: 0.4; }
+    50% { opacity: 1; }
+    100% { opacity: 0.4; }
+}
+
 .nowplaying-overlay {
     position:fixed; inset:0; z-index:600;
     background:var(--bg-base);
@@ -187,4 +235,30 @@ body { overflow:hidden; }
 
     /* Toast adjusts */
     .toast { bottom:24px; }
+}
+
+/* ════════════════════════════════════
+   MODALS (Generic & Custom)
+════════════════════════════════════ */
+.modal-content.confirm-modal {
+    max-width: 320px;
+    padding: 32px 24px;
+    text-align: center;
+}
+
+.confirm-icon {
+    width: 60px;
+    height: 60px;
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--accent);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+}
+
+.confirm-icon i {
+    width: 28px;
+    height: 28px;
 }

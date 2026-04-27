@@ -5,6 +5,7 @@ db = SQLAlchemy()
 
 class Playlist(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.String(50), nullable=False, index=True)
     name = db.Column(db.String(100), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     songs = db.relationship('PlaylistSong', backref='playlist', lazy=True, cascade="all, delete-orphan")
@@ -12,6 +13,7 @@ class Playlist(db.Model):
     def to_dict(self):
         return {
             "id": self.id,
+            "user_id": self.user_id,
             "name": self.name,
             "created_at": self.created_at.isoformat(),
             "song_count": len(self.songs)
@@ -42,7 +44,8 @@ class PlaylistSong(db.Model):
 
 class UserSongActivity(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    song_id = db.Column(db.String(50), nullable=False, unique=True, index=True)
+    user_id = db.Column(db.String(50), nullable=False, index=True)
+    song_id = db.Column(db.String(50), nullable=False, index=True)
     title = db.Column(db.String(200), nullable=False)
     artist = db.Column(db.String(200))
     image_url = db.Column(db.String(500))
@@ -72,6 +75,7 @@ class UserSongActivity(db.Model):
 
 class UserRecentPlay(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.String(50), nullable=False, index=True)
     song_id = db.Column(db.String(50), nullable=False, index=True)
     title = db.Column(db.String(200), nullable=False)
     artist = db.Column(db.String(200))
@@ -97,13 +101,14 @@ class UserRecentPlay(db.Model):
 
 class UserSearchQuery(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.String(50), nullable=False, index=True)
     query = db.Column(db.String(200), nullable=False, index=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, index=True)
 
 
 class UserFeedSong(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    song_id = db.Column(db.String(50), nullable=False, unique=True, index=True)
+    song_id = db.Column(db.String(50), nullable=False, index=True)
     title = db.Column(db.String(200), nullable=False)
     artist = db.Column(db.String(200))
     image_url = db.Column(db.String(500))

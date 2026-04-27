@@ -2,6 +2,198 @@ const Views = {
 
     /* ════════════ HOME ════════════ */
     async initHome() {
+        const homeView = document.getElementById('homeView');
+        const onboardingShell = document.getElementById('onboardingShell');
+
+        const setupOnboardingFlow = async () => {
+            if (!homeView || !onboardingShell) return false;
+            if (StorageManager.isOnboardingCompleted()) return false;
+
+            const suggestions = await API.getOnboardingSuggestions();
+            const suggestedArtists = suggestions.suggested_artists || [];
+            const artistGrid = document.getElementById('onboardingArtistGrid');
+            const artistPickCounter = document.getElementById('artistPickCounter');
+            const stepEls = Array.from(onboardingShell.querySelectorAll('.onboarding-step'));
+            const dotEls = Array.from(onboardingShell.querySelectorAll('.onboarding-dot'));
+            const queryInput = document.getElementById('onboardingQueryInput');
+            const addQueryBtn = document.getElementById('onboardingAddQuery');
+            const queryRow = document.getElementById('onboardingQueryRow');
+            const quickQueryRow = document.getElementById('onboardingQuickQueries');
+            const backBtn = document.getElementById('onboardingBackBtn');
+            const nextBtn = document.getElementById('onboardingNextBtn');
+            const titleEl = document.getElementById('onboardingTitle');
+            const subtitleEl = document.getElementById('onboardingSubtitle');
+
+            if (!artistGrid || !queryRow || !backBtn || !nextBtn || !titleEl || !subtitleEl) return false;
+
+            const selectedArtists = new Set();
+            const favoriteQueries = [];
+            const quickQueries = ['Romantic Hindi', 'Punjabi Party', 'Lo-fi Bollywood', 'Gym Songs', '90s Hindi Hits', 'Tamil Melody'];
+            let step = 1;
+
+            homeView.classList.add('home-onboarding-active');
+            onboardingShell.style.display = '';
+
+            const updateCounter = () => {
+                if (!artistPickCounter) return;
+                artistPickCounter.textContent = `${selectedArtists.size} selected`;
+            };
+
+            const renderQueries = () => {
+                queryRow.innerHTML = '';
+                favoriteQueries.forEach((query, idx) => {
+                    const chip = document.createElement('button');
+                    chip.className = 'chip onboarding-query-chip active';
+                    chip.innerHTML = `<span>${query}</span><span class="remove">x</span>`;
+                    chip.addEventListener('click', () => {
+                        favoriteQueries.splice(idx, 1);
+                        renderQueries();
+                    });
+                    queryRow.appendChild(chip);
+                });
+            };
+
+            const addQuery = (rawQuery) => {
+                const query = (rawQuery || '').trim();
+                if (!query) return;
+                if (favoriteQueries.find((q) => q.toLowerCase() === query.toLowerCase())) return;
+                favoriteQueries.push(query);
+                renderQueries();
+            };
+
+            const renderQuickQueries = () => {
+                if (!quickQueryRow) return;
+                quickQueryRow.innerHTML = '';
+                quickQueries.forEach((q) => {
+                    const chip = document.createElement('button');
+                    chip.className = 'chip';
+                    chip.textContent = q;
+                    chip.addEventListener('click', () => addQuery(q));
+                    quickQueryRow.appendChild(chip);
+                });
+            };
+
+            const syncStep = () => {
+                stepEls.forEach((el) => el.classList.toggle('active', Number(el.dataset.step) === step));
+                dotEls.forEach((el, idx) => el.classList.toggle('active', idx < step));
+                backBtn.style.visibility = step === 1 ? 'hidden' : 'visible';
+
+                if (step === 1) {
+                    titleEl.textContent = 'Pick at least 5 favorite artists';
+                    subtitleEl.textContent = 'We will build your first Home feed around these artists.';
+                    nextBtn.textContent = 'Continue';
+                } else if (step === 2) {
+                    titleEl.textContent = 'Search your favorite music styles';
+                    subtitleEl.textContent = 'Tell us what you usually search and play.';
+                    nextBtn.textContent = 'Continue';
+                } else {
+                    titleEl.textContent = 'Create your personalized feed';
+                    subtitleEl.textContent = 'One tap and your first feed is ready.';
+                    nextBtn.textContent = 'Create Feed';
+                }
+            };
+
+            artistGrid.innerHTML = '';
+            suggestedArtists.forEach((name) => {
+                const chip = document.createElement('button');
+                chip.className = 'onboarding-artist-chip';
+                chip.textContent = name;
+                chip.addEventListener('click', () => {
+                    if (selectedArtists.has(name)) {
+                        selectedArtists.delete(name);
+                        chip.classList.remove('active');
+                    } else {
+                        selectedArtists.add(name);
+                        chip.classList.add('active');
+                    }
+                    updateCounter();
+                });
+                artistGrid.appendChild(chip);
+            });
+
+            addQueryBtn?.addEventListener('click', () => {
+                addQuery(queryInput?.value || '');
+                if (queryInput) queryInput.value = '';
+            });
+            queryInput?.addEventListener('keydown', (e) => {
+                if (e.key !== 'Enter') return;
+                e.preventDefault();
+                addQuery(queryInput.value);
+                queryInput.value = '';
+            });
+
+            backBtn.addEventListener('click', () => {
+                if (step > 1) {
+                    step -= 1;
+                    syncStep();
+                }
+            });
+
+            nextBtn.addEventListener('click', async () => {
+                if (step === 1) {
+                    if (selectedArtists.size < 5) {
+                        showToast('Select at least 5 artists');
+                        return;
+                    }
+                    step = 2;
+                    syncStep();
+                    return;
+                }
+
+                if (step === 2) {
+                    if (favoriteQueries.length < 2) {
+                        showToast('Add at least 2 searches');
+                        return;
+                    }
+                    step = 3;
+                    syncStep();
+                    return;
+                }
+
+                nextBtn.disabled = true;
+                nextBtn.textContent = 'Building...';
+                const payload = {
+                    selected_artists: Array.from(selectedArtists),
+                    favorite_queries: favoriteQueries,
+                };
+                const result = await API.seedOnboardingFeed(payload);
+                if (!result.ok) {
+                    showToast(result.message || 'Could not create feed');
+                    nextBtn.disabled = false;
+                    nextBtn.textContent = 'Create Feed';
+                    return;
+                }
+
+                StorageManager.setOnboardingState({
+                    completed: true,
+                    selected_artists: payload.selected_artists,
+                    favorite_queries: payload.favorite_queries,
+                    completed_at: Date.now(),
+                });
+                StorageManager.setOnboardingFeed(result.seed_feed || []);
+                if (window.Recommender) Recommender.learnFromOnboarding();
+
+                showToast('Personalized feed ready!');
+                if (typeof Router !== 'undefined') {
+                    Router.navigateTo('home', { force: true });
+                }
+            });
+
+            updateCounter();
+            renderQueries();
+            renderQuickQueries();
+            syncStep();
+            lucide.createIcons();
+            return true;
+        };
+
+        if (await setupOnboardingFlow()) {
+            return;
+        }
+
+        if (homeView) homeView.classList.remove('home-onboarding-active');
+        if (onboardingShell) onboardingShell.style.display = 'none';
+
         // Seed popular row with trending artists
         const popularRow = document.getElementById('popularRow');
         if (popularRow) {
@@ -19,22 +211,12 @@ const Views = {
             } catch {}
         }
 
-        // Category chip filter (UI only)
-        const chipRow = document.getElementById('categoryChipRow');
-        if (chipRow) {
-            chipRow.querySelectorAll('.chip').forEach(chip => {
-                chip.addEventListener('click', () => {
-                    chipRow.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-                    chip.classList.add('active');
-                    const cat = chip.dataset.cat;
-                    if (cat !== 'all') quickSearch(cat + ' songs');
-                });
-            });
-        }
-
         // Load personal home data
         const homeData = await API.getHomeData();
         const { history, favorites, most_played, recent_queries, feed, more_by_artist, reference_artist, recent_artists } = homeData;
+        const onboardingFeed = StorageManager.getOnboardingFeed() || [];
+        const baseFeed = history.length === 0 && onboardingFeed.length > 0 ? onboardingFeed : feed;
+        const finalFeed = window.Recommender ? Recommender.personalizeFeed(baseFeed, homeData) : baseFeed;
         Player.favoriteSongIds = new Set(favorites.map(s => s.song_id));
 
         // Recently listened
@@ -108,13 +290,48 @@ const Views = {
         // Feed
         const feedGrid = document.getElementById('homeFeedGrid');
         const feedEmpty = document.getElementById('homeFeedEmpty');
-        if (feed.length === 0) {
+        const feedTitle = document.getElementById('homeFeedTitle');
+        if (feedTitle) {
+            feedTitle.textContent = history.length === 0 && onboardingFeed.length > 0
+                ? '✨ Made for You'
+                : '✨ Recommended';
+        }
+        if (finalFeed.length === 0) {
             if (feedEmpty) feedEmpty.style.display = '';
         } else {
             if (feedEmpty) feedEmpty.style.display = 'none';
-            if (feedGrid) renderSongGrid(feed.slice(0, 12), feedGrid);
+            if (feedGrid) renderSongGrid(finalFeed.slice(0, 12), feedGrid);
         }
 
+        lucide.createIcons();
+    },
+
+    async initHistory() {
+        const grid = document.getElementById('historyGrid');
+        const empty = document.getElementById('historyEmpty');
+        const spinner = document.getElementById('historySpinner');
+        const clearBtn = document.getElementById('btnClearHistory');
+
+        if (!grid) return;
+        if (spinner) spinner.style.display = 'flex';
+        const hd = await API.getHomeData();
+        if (spinner) spinner.style.display = 'none';
+
+        const history = hd.history || [];
+        if (!history.length) {
+            if (empty) empty.style.display = '';
+            return;
+        }
+
+        if (empty) empty.style.display = 'none';
+        renderSongGrid(history, grid);
+
+        clearBtn?.addEventListener('click', () => {
+            showToast('History is driven from recent plays and will refresh as you listen');
+        });
+    },
+
+    initAbout() {
         lucide.createIcons();
     },
 
@@ -190,6 +407,7 @@ const Views = {
                 if (countLbl) countLbl.innerHTML = `<span>${allResults.length}</span> results for "${q}"`;
                 if (langFilter) { langFilter.style.display = 'flex'; langFilter.querySelectorAll('.chip').forEach((c,i) => c.classList.toggle('active', i===0)); }
                 activeFilter = 'all'; applyFilter();
+                if (window.Recommender) Recommender.learnFromSearch(q);
                 API.persistSearchFeed(q, data.results.filter(r => r.type === 'song'));
             }, 420);
         });
@@ -232,17 +450,18 @@ const Views = {
         }
         lucide.createIcons();
 
+        // Setup modal listeners
         const openModal  = () => modal.classList.add('show');
         const closeModal = () => { modal.classList.remove('show'); document.getElementById('newPlaylistName').value = ''; };
         if (btnCreate) btnCreate.addEventListener('click', openModal);
         if (btnCrEmp) btnCrEmp.addEventListener('click', openModal);
         document.getElementById('btnCancelCreate').addEventListener('click', closeModal);
-        document.getElementById('btnSavePlaylist').addEventListener('click', async () => {
+        document.getElementById('btnSavePlaylist').onclick = async () => {
             const name = document.getElementById('newPlaylistName').value.trim();
             if (!name) return;
             await API.createPlaylist(name); closeModal();
-            showToast('Playlist created! 🎵'); navigateTo('library');
-        });
+            showToast('Playlist created! 🎵'); navigateTo('library', { force: true });
+        };
     },
 
     /* ════════════ FAVORITES ════════════ */
@@ -272,8 +491,9 @@ const Views = {
             Player.setQueue(data.songs); Player.playSong(0);
         });
         el('btnDeletePlaylist')?.addEventListener('click', async () => {
-            if (!confirm('Delete this playlist?')) return;
-            await API.deletePlaylist(id); showToast('Playlist deleted'); navigateTo('library');
+            const confirmed = await UI_confirm('Delete Playlist', 'Are you sure you want to delete this playlist? This cannot be undone.');
+            if (!confirmed) return;
+            await API.deletePlaylist(id); showToast('Playlist deleted'); navigateTo('library', { force: true });
         });
 
         const list = el('playlistSongsList');
@@ -313,9 +533,9 @@ const Views = {
 
         // Populate art + meta
         if (artImg) artImg.src = song.image_url || '';
-        if (titleEl)  titleEl.textContent  = song.title;
-        if (artistEl) artistEl.textContent = song.artist || '';
-        if (albumEl)  albumEl.textContent  = song.album_name || '';
+        if (titleEl)  titleEl.textContent  = decodeHTMLEntities(song.title || '');
+        if (artistEl) artistEl.textContent = decodeHTMLEntities(song.artist || '');
+        if (albumEl)  albumEl.textContent  = decodeHTMLEntities(song.album_name || '');
 
         // Dynamic background tint from album art
         if (song.image_url) {
@@ -328,9 +548,10 @@ const Views = {
         if (favBtn) {
             const updateFav = () => {
                 const isFav = Player.isFavorite(song.song_id);
-                favBtn.style.color = isFav ? 'var(--accent)' : '';
+                favBtn.style.color = isFav ? '#ef4444' : '';
+                favBtn.classList.toggle('favorite-active', isFav);
                 const icon = favBtn.querySelector('i');
-                if (icon) icon.style.fill = isFav ? 'var(--accent)' : 'none';
+                if (icon) icon.style.fill = isFav ? '#ef4444' : 'none';
             };
             updateFav();
             favBtn.addEventListener('click', async () => { await Player.toggleFavorite(song); updateFav(); });
@@ -400,7 +621,11 @@ const Views = {
                 .slice(0, 10);
 
             if (!upcoming.length) {
-                queue.innerHTML = '<p class="text-muted text-sm">No upcoming songs in queue.</p>';
+                queue.innerHTML = '<p class="text-muted text-sm">Building songs for your taste...</p>';
+                Player.ensureAutoUpcoming(song).then((added) => {
+                    if (added) Views.initNowPlaying();
+                    else queue.innerHTML = '<p class="text-muted text-sm">No upcoming songs in queue.</p>';
+                });
             } else {
                 upcoming.forEach(({ s, i }) => {
                     const row = document.createElement('div');
@@ -413,14 +638,29 @@ const Views = {
                             <div class="row-artist">${s.artist || ''}</div>
                         </div>
                         <div class="row-actions">
+                            <button class="btn-icon next-q" title="Play next"><i data-lucide="arrow-up-circle"></i></button>
+                            <button class="btn-icon similar-q" title="Add similar"><i data-lucide="sparkles"></i></button>
                             <button class="btn-icon rm-q" title="Remove"><i data-lucide="x"></i></button>
                         </div>
                     `;
-                    row.addEventListener('click', e => { if (e.target.closest('.rm-q')) return; Player.playSong(i); });
+                    row.addEventListener('click', e => {
+                        if (e.target.closest('.rm-q') || e.target.closest('.next-q') || e.target.closest('.similar-q')) return;
+                        Player.playSong(i);
+                    });
                     row.querySelector('.rm-q').addEventListener('click', e => {
                         e.stopPropagation();
-                        Player.queue.splice(i, 1);
-                        if (i < Player.currentIndex) Player.currentIndex--;
+                        Player.removeFromQueueAt(i);
+                        Views.initNowPlaying();
+                    });
+                    row.querySelector('.next-q').addEventListener('click', e => {
+                        e.stopPropagation();
+                        Player.moveToPlayNext(i);
+                        Views.initNowPlaying();
+                    });
+                    row.querySelector('.similar-q').addEventListener('click', async e => {
+                        e.stopPropagation();
+                        const count = await Player.addSimilarAfter(i, 5);
+                        showToast(count ? `Added ${count} similar songs` : 'No similar songs found');
                         Views.initNowPlaying();
                     });
                     queue.appendChild(row);

@@ -1,0 +1,21 @@
+<section class="fade-in" id="historyView">
+<div class="page-wrap">
+    <div class="history-topbar">
+        <h1>Listening History</h1>
+        <button class="btn-secondary" id="btnClearHistory">Clear</button>
+    </div>
+
+    <div class="loading-spinner" id="historySpinner" style="display:none">
+        <i data-lucide="loader-2" class="spin"></i>
+    </div>
+
+    <div class="songs-grid" id="historyGrid"></div>
+
+    <div class="empty-state" id="historyEmpty" style="display:none">
+        <div class="empty-state-icon"><i data-lucide="history"></i></div>
+        <h3>No history yet</h3>
+        <p>Play some songs and they will appear here.</p>
+        <button class="btn-accent" onclick="navigateTo('search')" style="margin-top:14px">Start Listening</button>
+    </div>
+</div>
+</section>
